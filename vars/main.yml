@@ -1,0 +1,15 @@
+---
+# vars file for pass
+
+pass_version: 1.7.3
+# pass_gpg_key: AFBA32A6
+
+_pass_packages:
+  default:
+    - tree
+    - git
+    - make
+    - pwgen
+    # - pass
+
+pass_packages: "{{ _pass_packages[ansible_os_family] | default(_pass_packages['default']) }}"

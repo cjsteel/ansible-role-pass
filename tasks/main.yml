@@ -1,0 +1,43 @@
+---
+# tasks file for pass
+
+- name: pass | install pass requirements
+  become: yes
+  package:
+    name: "{{ pass_packages }}"
+    state: present
+  register: pass_install_pass
+  until: pass_install_pass is succeeded
+  retries: 3
+
+- name: pass | Set pass temporary location
+  set_fact: pass_src_home={{ ansible_env.HOME }}/src/pass
+
+#- name: debug home value
+#  debug:
+#    var: pass_src_home
+  
+- name: Create directory
+  file:
+    path: "{{ pass_src_home }}"
+    state: directory
+
+- name: "pass | Download pass version {{ pass_version }}"
+  get_url:
+    url: "http://git.zx2c4.com/password-store/snapshot/password-store-{{ pass_version }}.tar.xz"
+    dest: "{{ pass_src_home }}"
+  register: pass_downloaded_source
+
+- name: pass | Extract sources
+  unarchive:
+    src: "{{ pass_src_home }}/password-store-{{pass_version}}.tar.xz"
+    dest: "{{pass_src_home}}"
+    copy: no
+  #when: pass_downloaded_source.changed
+
+- name: pass | Run make install
+  become: yes
+  command: make install
+  args:
+    chdir: "{{ pass_src_home }}/password-store-{{ pass_version }}"
+    creates: /usr/bin/pass

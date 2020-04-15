@@ -1,0 +1,8 @@
+---
+# handlers file for pass
+- name: restart pass
+  service:
+    name: "{{ pass_service }}"
+    state: restarted
+  when:
+    - ansible_virtualization_type != "docker"
