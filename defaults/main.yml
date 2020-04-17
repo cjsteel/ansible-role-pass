@@ -1,2 +1,6 @@
 ---
 # defaults file for pass
+# pass_verison: 1.7.3
+pass_version: 1.7.3
+# pass_gpg_key: AFBA32A6
+pass_url: https://git.zx2c4.com/password-store/snapshot/password-store-{{ pass_version }}.tar.xz

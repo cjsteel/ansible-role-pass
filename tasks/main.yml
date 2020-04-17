@@ -17,27 +17,27 @@
 #  debug:
 #    var: pass_src_home
   
-- name: Create directory
-  file:
-    path: "{{ pass_src_home }}"
-    state: directory
+#- name: Create directory
+#  file:
+#    path: "{{ pass_src_home }}"
+#    state: directory
 
 - name: "pass | Download pass version {{ pass_version }}"
   get_url:
-    url: "http://git.zx2c4.com/password-store/snapshot/password-store-{{ pass_version }}.tar.xz"
-    dest: "{{ pass_src_home }}"
-  register: pass_downloaded_source
+    url: "{{ pass_url }}"
+    dest: /tmp
+  register: pass_source_download
 
 - name: pass | Extract sources
   unarchive:
-    src: "{{ pass_src_home }}/password-store-{{pass_version}}.tar.xz"
-    dest: "{{pass_src_home}}"
+    src: /tmp/password-store-{{ pass_version }}.tar.xz
+    dest: /tmp
     copy: no
-  #when: pass_downloaded_source.changed
+  when: pass_source_download.changed
 
 - name: pass | Run make install
   become: yes
   command: make install
   args:
-    chdir: "{{ pass_src_home }}/password-store-{{ pass_version }}"
+    chdir: /tmp/password-store-{{ pass_version }}
     creates: /usr/bin/pass
